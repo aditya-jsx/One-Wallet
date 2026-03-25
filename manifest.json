@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "One-Wallet",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["http://localhost:5173/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' http://localhost:5173; object-src 'self'"
+  }
+}
