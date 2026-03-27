@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import manifest from './manifest.json'
+import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [
@@ -20,4 +21,12 @@ export default defineConfig({
       'Access-Control-Allow-Origin': '*',
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        popup: resolve(__dirname, 'index.html'),
+        onboarding: resolve(__dirname, 'onboarding.html')
+      }
+    }
+  }
 })
