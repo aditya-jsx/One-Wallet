@@ -1,42 +1,44 @@
+import { useEffect, useRef, useState } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-const Welcome = () => {
-  const handleOpenSetup = () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
-  };
-
-  return (
-    <>
-      <div className="flex-1 flex flex-col items-center justify-space-between gap-8 text-white">
-        <div className='flex flex-col gap-4 items-center justify-center h-[90%] w-full'>
-            <div className='flex gap-2'>
-                <img src="/wallet.png" alt="" className='h-10 w-10'/>
-                <h1 className="text-4xl font-bold text-center">
-                    One Wallet
-                </h1>
-            </div>
-            <div className='flex'>
-                <h1 className='text-center text-xl'>
-                    To get started, create a new wallet or import an existing one.
-                </h1>
-            </div>
-        </div>
-        <div className="flex flex-col h-[10%] w-full justify-end items-center gap-4"> 
-          <button onClick={handleOpenSetup} className="bg-blue-500 hover:bg-blue-700 text-white py-2 w-full text-center rounded-xl text-2xl cursor-pointer">
-            Create Wallet
-          </button>
-        </div>
-    </div>
-    </>
-  );
-};
-
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasWallet, setHasWallet] = useState(false);
+  
+  const hasOpenedTab = useRef(false);
+
+  useEffect(() => {
+    chrome.storage.local.get(['encryptedWallet'], (result) => {
+      if (result.encryptedWallet) {
+        setHasWallet(true);
+        setIsLoading(false);
+      } else {
+        if (!hasOpenedTab.current) {
+          hasOpenedTab.current = true;
+          chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+          window.close(); 
+        }
+      }
+    });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="h-[600px] w-[360px] flex items-center justify-center bg-zinc-950 text-white font-sans">
+        <p className="text-xl">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <MemoryRouter>
       <div className="h-[600px] w-[360px] flex flex-col bg-zinc-950 p-4 font-sans text-white">
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={
+            <div className="flex flex-col items-center justify-center h-full">
+              <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+            </div>
+          } />
         </Routes>
       </div>
     </MemoryRouter>
