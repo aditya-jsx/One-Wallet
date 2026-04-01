@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWalletSetup } from '../context/walletContext';
 
 const CreatePassword = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [isChecked, setIsChecked] = useState(false);
+  const { updateSetup } = useWalletSetup();
 
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === confirm && isChecked && password.length >= 8) {
+      updateSetup({ password });
       navigate('/recoveryPhrase');
     }
   };
@@ -18,7 +21,7 @@ const CreatePassword = () => {
 
   return (
     <div className="w-[420px] flex flex-col text-white bg-zinc-950 rounded-2xl p-8 shadow-2xl">
-        <div className='flex items-center mb-4'>    
+        <div className='flex items-center mb-6'>    
             <button 
               onClick={() => navigate(-1)} 
               className="text-zinc-400 hover:text-white transition-colors cursor-pointer p-1"

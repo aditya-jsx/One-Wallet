@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mnemonic } from '../utils/solana';
+import { generateMnemonic } from '../utils/solana';
 
 const RecoveryPhrase = () => {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    alert(`Generated Recovery Phrase:\n\n${mnemonic}`);
+    alert(`Generated Recovery Phrase`);
   }, [])
 
   const mockPhrase = [

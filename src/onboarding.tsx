@@ -1,8 +1,12 @@
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import './index.css';
 import CreateWallet from './pages/createWallet';
+import { WalletProvider } from './context/walletContext';
 
 import CreatePassword from './pages/Createpassword';
 import RecoveryPhrase from './pages/RecoveryPhrase';
@@ -36,16 +40,18 @@ const Welcome = () => {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MemoryRouter>
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#e3e0ff] font-sans">
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/createWallet" element={<CreateWallet />} />
-          <Route path="/createPassword" element={<CreatePassword />} />
-          <Route path="/recoveryPhrase" element={<RecoveryPhrase />} />
-          <Route path="/createUsername" element={<CreateUsername />} />
-        </Routes>
-      </div>
-    </MemoryRouter>
+    <WalletProvider>
+      <MemoryRouter>
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#e3e0ff] font-sans">
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/createWallet" element={<CreateWallet />} />
+            <Route path="/createPassword" element={<CreatePassword />} />
+            <Route path="/recoveryPhrase" element={<RecoveryPhrase />} />
+            <Route path="/createUsername" element={<CreateUsername />} />
+          </Routes>
+        </div>
+      </MemoryRouter>
+    </WalletProvider>
   </StrictMode>
 );
