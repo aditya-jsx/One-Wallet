@@ -2,7 +2,7 @@
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-// 1. Derive a strong key from the user's password using PBKDF2
+// Derive a strong key from the user's password using PBKDF2
 const getPasswordKey = async (password: string, salt: Uint8Array) => {
   const keyMaterial = await window.crypto.subtle.importKey(
     "raw",
@@ -26,7 +26,7 @@ const getPasswordKey = async (password: string, salt: Uint8Array) => {
   );
 };
 
-// 2. Encrypt the Mnemonic
+// Encrypt the Mnemonic
 export const encryptVault = async (mnemonic: string, password: string) => {
   const salt = window.crypto.getRandomValues(new Uint8Array(16));
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -46,7 +46,7 @@ export const encryptVault = async (mnemonic: string, password: string) => {
   };
 };
 
-// 3. Decrypt the Mnemonic
+// Decrypt the Mnemonic
 export const decryptVault = async (encryptedBase64: string, password: string, saltBase64: string, ivBase64: string) => {
   try {
     const encryptedData = new Uint8Array(atob(encryptedBase64).split("").map((c) => c.charCodeAt(0)));

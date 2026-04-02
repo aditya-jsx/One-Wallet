@@ -1,25 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateMnemonic } from '../utils/solana';
+import { useWalletSetup } from '../context/walletContext';
 
 const RecoveryPhrase = () => {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
+  const { updateSetup, setupData } = useWalletSetup();
+  const [phraseArray, setPhraseArray] = useState<string[]>([]);
 
   useEffect(() => {
-    alert(`Generated Recovery Phrase`);
+    const phrase = setupData.mnemonic || generateMnemonic();
+    if(!setupData.mnemonic){
+      updateSetup({ mnemonic: phrase });
+    };
+    setPhraseArray(phrase.split(' '));
   }, [])
 
-  const mockPhrase = [
-    "abandon", "abandon", "abandon", "abandon", 
-    "abandon", "abandon", "abandon", "abandon", 
-    "abandon", "abandon", "abandon", "about"
-  ];
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(mockPhrase.join(' '));
+    navigator.clipboard.writeText(phraseArray.join(' '));
     alert('Recovery phrase copied to clipboard!');
   };
+
+  const handlenext = () => {
+    if(saved) navigate("/createUsername")
+  }
 
   return (
     <div className="w-[420px] flex flex-col text-white bg-zinc-950 rounded-2xl p-6 shadow-2xl relative">
@@ -53,7 +59,7 @@ const RecoveryPhrase = () => {
 
       {/* Seed Phrase Grid */}
       <div className="grid grid-cols-3 gap-2.5 mb-4">
-        {mockPhrase.map((word, index) => (
+        {phraseArray.map((word, index) => (
           <div 
             key={index} 
             className="flex bg-[#1e1e1e] border border-zinc-800 rounded-lg py-2.5 px-3 text-sm items-center hover:border-zinc-700 transition-colors"
@@ -99,6 +105,7 @@ const RecoveryPhrase = () => {
 
         {/* Next Button */}
         <button 
+          onClick={handlenext}
           disabled={!saved}
           className={`w-full py-3.5 rounded-xl text-lg font-semibold transition-colors duration-200 ${
             saved 
