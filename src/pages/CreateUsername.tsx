@@ -23,8 +23,8 @@ const CreateUsername = () => {
 
       const finalWalletData = {
         username: username,
-        valutData: vault,
-        isInitializes: true,
+        vault: vault,
+        isInitialized: true,
       }
 
       if(typeof chrome !== 'undefined' && chrome.storage){

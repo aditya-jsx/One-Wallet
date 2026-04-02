@@ -12,13 +12,13 @@ const App = () => {
   const hasOpenedTab = useRef(false);
 
   useEffect(() => {
-    if(typeof chrome !== undefined && chrome.storage){
+    if(typeof chrome !== 'undefined' && chrome.storage){
       chrome.storage.local.get(["one_wallet_data"], (result) => {
         if(result.one_wallet_data?.isInitialized){
           setIsInitialized(true);
         }else{
-          chrome.tabs.create({ url: 'onboarding.html '});
-          windows.close;
+          chrome.tabs.create({ url: 'onboarding.html' });
+          window.close;
         }
         setIsLoading(false);
       })
