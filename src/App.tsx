@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import Unlock from "./pages/popup/unlock"
+import Unlock from "./pages/popup/Unlock"
 import Dashboard from './pages/popup/Dashboard';
+import Send from './pages/popup/Actions/Send';
+import Receive from './pages/popup/Actions/Receive';
+import Swap from './pages/popup/Actions/Swap';
+import Buy from './pages/popup/Actions/Buy';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,15 +38,27 @@ const App = () => {
   if (!isInitialized) {
     return <div className="w-[360px] h-[600px] bg-zinc-950 text-white p-6">Please complete setup in the new tab.</div>;
   }
-
-  return (
-    <div className="w-[360px] h-[600px] bg-zinc-950 text-white overflow-hidden flex flex-col">
-      {isUnlocked ? (
-        <Dashboard onLock={() => setIsUnlocked(false)} />
-      ) : (
+  if (!isUnlocked) {
+    return (
+      <div className="w-[360px] h-[600px] bg-zinc-950 text-white overflow-hidden flex flex-col">
         <Unlock onUnlock={() => setIsUnlocked(true)} />
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  // If unlocked, render the MemoryRouter with all your internal extension screens
+  return (
+    <MemoryRouter>
+      <div className="w-[360px] h-[600px] bg-zinc-950 text-white overflow-hidden flex flex-col">
+        <Routes>
+          <Route path="/" element={<Dashboard onLock={() => setIsUnlocked(false)} />} />
+          <Route path="/send" element={<Send />} />
+          <Route path="/receive" element={<Receive />} />
+          <Route path="/swap" element={<Swap />} />
+          <Route path="/buy" element={<Buy />} />
+        </Routes>
+      </div>
+    </MemoryRouter>
   );
 };
 
