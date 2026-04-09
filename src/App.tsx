@@ -6,6 +6,7 @@ import Send from './pages/popup/Actions/Send';
 import Receive from './pages/popup/Actions/Receive';
 import Swap from './pages/popup/Actions/Swap';
 import Buy from './pages/popup/Actions/Buy';
+import ReceiveAsset from './pages/popup/Actions/ReceiveAssetPage';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +57,7 @@ const App = () => {
           <Route path="/receive" element={<Receive />} />
           <Route path="/swap" element={<Swap />} />
           <Route path="/buy" element={<Buy />} />
+          <Route path="/receive-asset" element={<ReceiveAsset />} />
         </Routes>
       </div>
     </MemoryRouter>
