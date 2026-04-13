@@ -27,6 +27,15 @@ const Send = () => {
     fetchBalance();
   }, [userKey]);
 
+  useEffect(() => {
+    const BASE_FEE = 0.000005; 
+    if (userBalance > BASE_FEE) {
+      setmaxAmount(userBalance - BASE_FEE);
+    } else {
+      setmaxAmount(0);
+    }
+  }, [userBalance]);
+
   useEffect(()=>{
     const fetchUserKey = async () => {
       const key = await getPublicKey();
@@ -38,19 +47,22 @@ const Send = () => {
 
   useEffect(() => {
     const checkBalance = async () => {
-      if(isValid && amount && parseInt(amount) > 0){
+      const parsedAmount = parseFloat(amount);
+      if(isValid && amount && parsedAmount > 0){
         try{
           const recipientKey = new PublicKey(address);
-          const sendingAmount = parseInt(amount);
+          // const sendingAmount = parseFloat(amount);
 
-          const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, sendingAmount);
-          // const fees = fee * 1e9;
+          const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, parsedAmount);
           const remainingAmount = userBalance - (fee / 1e9);
+          console.log(remainingAmount)
           setmaxAmount(remainingAmount > 0 ? remainingAmount : 0);
           setEnoughBalance(isEnough)
         }catch(e){
           setEnoughBalance(false);
         }
+      }else{
+        setEnoughBalance(false);
       }
     }
     checkBalance();
@@ -67,7 +79,7 @@ const Send = () => {
           <ArrowLeft size={20} />
         </button>
         <h1 className="text-lg font-semibold tracking-wide">Send SOL</h1>
-        <div className="w-9" /> {/* Spacer for flex centering */}
+        <div className="w-9" />
       </div>
 
       {/* Main Content */}
@@ -76,7 +88,6 @@ const Send = () => {
         {/* Recipient Input */}
         <div className="flex flex-col gap-2">
           <div className="relative flex items-center">
-            {/* {userKey} */}
             <input
               type="text"
               placeholder="Receipient's Solana address"
@@ -111,11 +122,6 @@ const Send = () => {
                 MAX
               </button>
             </div>
-            {/* {amount && (
-              <span className="text-sm text-gray-500 mt-2">
-                ~ ${(parseFloat(amount) * 84.25).toFixed(2)} USD
-              </span>
-            )} */}
           </div>
           <div className='pl-1 pr-2.5 text-gray-500 w-full flex items-center justify-between'>
             {amount && (
@@ -131,7 +137,6 @@ const Send = () => {
       {/* Footer / Action */}
       <div className="flex justify-between gap-5 p-5 mt-auto bg-zinc-950 ">
         <button
-          // disabled={!address || !amount}
           onClick={() => navigate(-1)} 
           className='w-full py-3.5 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 bg-[#2A2A2B] text-white cursor-pointer'
         >
