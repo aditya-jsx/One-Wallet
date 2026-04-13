@@ -147,51 +147,44 @@ import { useNavigate } from 'react-router-dom';
 import TokensBox from '../../components/TokensBox';
 
 import { Connection, PublicKey } from "@solana/web3.js";
+import { getBalance } from '../../utils/solana';
 
 const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
 
 export default function Dashboard({ onLock }: { onLock: () => void }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('Wallet 1');
-  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [publicKey, setPublicKey] = useState("");
   const [balance, setBalance] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  // Helper to shorten the address (e.g., "EJj7...KBi")
   const truncateAddress = (address: string) => {
     if (!address) return "";
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
   useEffect(() => {
-    // Fetch user data and public key from Chrome storage
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.local.get(["one_wallet_data", "publicKey"], (res) => {
         if (res.one_wallet_data?.username) setUsername(res.one_wallet_data.username);
-        // For testing, we fallback to your devnet address if storage is empty.
         const activeKey = res.publicKey || "EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi";
         setPublicKey(activeKey);
       });
     } else {
-      // Fallback for local browser testing outside of extension
       setPublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
     }
   }, []);
 
   useEffect(() => {
-    // Only fetch balance if we have a valid public key
     const fetchBalance = async () => {
-      if (!publicKey) return;
-      try {
-        const connection = new Connection(RPC_URL, "confirmed");
-        const pubKeyObj = new PublicKey(publicKey);
-        const lamports = await connection.getBalance(pubKeyObj);
-        setBalance(lamports / 1e9); // Convert lamports to SOL
-      } catch (error) {
-        console.error("Failed to fetch balance:", error);
-      }
-    };
+      if(!publicKey) return;
 
+      const fetchedBalance = await getBalance(publicKey);
+
+      if(fetchedBalance !== undefined){
+        setBalance(fetchedBalance);
+      }
+    }
     fetchBalance();
   }, [publicKey]);
 

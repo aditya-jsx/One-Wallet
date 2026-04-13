@@ -1,14 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
+import { checkIfBalanceIsEnough, getBalance, getPublicKey, validateAddress } from '../../../utils/solana';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 const Send = () => {
   const navigate = useNavigate();
-  const [address, setAddress] = useState('');
-  const [amount, setAmount] = useState('');
+  const [address, setAddress] = useState<string>('');
+  const [amount, setAmount] = useState<string>('');
+  const [userKey, setUserKey] = useState<string>('');
+  const [userBalance, setUserBalance] = useState(0);
+  const [maxAmount, setmaxAmount] = useState(0)
+  const [enoughtBalance, setEnoughBalance] = useState(false);
+  const isValid = validateAddress(address);
 
-  // Mock balance for UI purposes
-  const solBalance = 1.245;
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if(!userKey) return;
+
+      const fetchedBalance = await getBalance(userKey);
+
+      if(fetchedBalance !== undefined){
+        setUserBalance(fetchedBalance);
+      }
+    }
+    fetchBalance();
+  }, [userKey]);
+
+  useEffect(()=>{
+    const fetchUserKey = async () => {
+      const key = await getPublicKey();
+      if(!key) return;
+      setUserKey(key);
+    }
+    fetchUserKey();
+  }, []);
+
+  useEffect(() => {
+    const checkBalance = async () => {
+      if(isValid || amount || parseInt(amount) > 0){
+        try{
+          const recipientKey = new PublicKey(address);
+          const sendingAmount = parseInt(amount);
+
+          const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, sendingAmount);
+          const remainingAmount = userBalance - fee;
+          setmaxAmount(remainingAmount);
+          setEnoughBalance(isEnough)
+        }catch(e){
+          setEnoughBalance(false);
+        }
+      }
+    }
+    checkBalance();
+  }, [amount, address, isValid, userBalance]);
 
   return (
     <div className="flex flex-col h-[600px] w-full bg-zinc-950 text-white font-sans overflow-hidden">
@@ -30,6 +75,7 @@ const Send = () => {
         {/* Recipient Input */}
         <div className="flex flex-col gap-2">
           <div className="relative flex items-center">
+            {/* {userKey} */}
             <input
               type="text"
               placeholder="Receipient's Solana address"
@@ -37,7 +83,7 @@ const Send = () => {
               onChange={(e) => setAddress(e.target.value)}
               className="w-full bg-[#2a2a2b73] border border-[#3A3A3B] rounded-lg p-2.5 pl-3.5 text-[15px] focus:outline-none transition-colors placeholder:text-gray-500"
             />
-            {address.length > 30 && (
+            {isValid && (
               <CheckCircle2 size={18} className="absolute right-3 text-green-500" />
             )}
           </div>
@@ -58,7 +104,7 @@ const Send = () => {
               />
               <span className='pr-2 text-gray-400 text-[15px]'>SOL</span>
               <button 
-                onClick={() => setAmount(solBalance.toString())}
+                onClick={() => setAmount(maxAmount.toString())}
                 className="text-sm font-bold bg-gray-500/10 px-2 py-1 rounded-xl hover:bg-gray-500/20 transition-colors"
               >
                 MAX
@@ -66,17 +112,17 @@ const Send = () => {
             </div>
             {/* {amount && (
               <span className="text-sm text-gray-500 mt-2">
-                ~ ${(parseFloat(amount) * 145.20).toFixed(2)} USD
+                ~ ${(parseFloat(amount) * 84.25).toFixed(2)} USD
               </span>
             )} */}
           </div>
           <div className='pl-1 pr-2.5 text-gray-500 w-full flex items-center justify-between'>
             {amount && (
-              <span>
-                ~ ${(parseFloat(amount) * 145.20).toFixed(2)} USD
-              </span>
+              <p className={enoughtBalance ? "text-green-400" : "text-red-500"}>
+                ~ ${(parseFloat(amount) * 84.25).toFixed(2)} USD
+              </p>
             )}
-            <p className='absolute right-6'>Available 0.0171 SOL</p>
+            <p className='absolute right-6'>Available {userBalance} SOL</p>
           </div>
         </div>
       </div>
