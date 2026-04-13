@@ -38,14 +38,15 @@ const Send = () => {
 
   useEffect(() => {
     const checkBalance = async () => {
-      if(isValid || amount || parseInt(amount) > 0){
+      if(isValid && amount && parseInt(amount) > 0){
         try{
           const recipientKey = new PublicKey(address);
           const sendingAmount = parseInt(amount);
 
           const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, sendingAmount);
-          const remainingAmount = userBalance - fee;
-          setmaxAmount(remainingAmount);
+          // const fees = fee * 1e9;
+          const remainingAmount = userBalance - (fee / 1e9);
+          setmaxAmount(remainingAmount > 0 ? remainingAmount : 0);
           setEnoughBalance(isEnough)
         }catch(e){
           setEnoughBalance(false);
@@ -137,7 +138,7 @@ const Send = () => {
           Cancel
         </button>
         <button
-          disabled={!address || !amount}
+          disabled={!address || !amount || !enoughtBalance || !isValid}
           className={`w-full py-3.5 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 ${
             address && amount
               ? 'bg-[#AB9FF2] hover:bg-[#998ce3] text-black shadow-lg shadow-purple-900/20 cursor-pointer'

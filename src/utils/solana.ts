@@ -45,7 +45,7 @@ export const getPublicKey = async () => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     const res = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
     if (res.publicKey) {
-        activeKey = new PublicKey(res.publicKey);
+        activeKey = res.publicKey;
     }
   }else{
     activeKey = "EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi";
@@ -69,7 +69,7 @@ export const checkIfBalanceIsEnough = async (balance: number, receipientAddress:
 
     let requiredAmount = fee + amountToBeSent;
     let isEnough = false;
-    if(userBalance > requiredAmount){
+    if(userBalance >= requiredAmount){
         isEnough = true;
         return {fee, isEnough};
     }
