@@ -11,6 +11,8 @@ import {
   sendAndConfirmTransaction} from "@solana/web3.js";
 
 import * as bip39 from "bip39";
+import { decryptVault } from "./crypto";
+import { derivePath } from "ed25519-hd-key";
 
 const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
 const connection = new Connection(RPC_URL, "confirmed");
@@ -170,28 +172,28 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
     }
 }
 
-export const getSenderKeypairFromMnemonic = async (): Promise<Keypair> => {
+const getMnemonic = async () => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    const res = await chrome.storage.local.get(["one_wallet_data"]);
-    
-    const mnemonic = res.one_wallet_data?.mnemonic;
+      const res = await chrome.storage.local.get(["one_wallet_data"]);
+      const { username, vault, isInitialized } = res.one_wallet_data;
 
-    if (!mnemonic) {
-      throw new Error("Mnemonic not found.");
-    }
+      const { encryptedData, salt, iv } = vault;
 
-    // 12 words into a cryptographic seed
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
+      // for development
+      const password = "Aditya@3003"
 
-    const derivationPath = "m/44'/501'/0'/0'";
-    const derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
+      const mnemonic = await decryptVault(encryptedData, password, salt, iv)
 
-    // Reconstruct the Keypair
-    const keypair = Keypair.fromSeed(derivedSeed);
+      const seed = bip39.mnemonicToSeedSync(mnemonic);
 
-    return keypair;
+      const derivationPath = "m/44'/501'/0'/0'";
+      const derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
+      const keypair = Keypair.fromSeed(derivedSeed);
+
+      return keypair;
   }
-  throw new Error("Chrome storage is not available.");
+
+  return "not found"
 }
 
 export const sendSol = async (receiverKey: PublicKey, amount: number) => {
@@ -200,7 +202,7 @@ export const sendSol = async (receiverKey: PublicKey, amount: number) => {
     const userKey = new PublicKey(user);
     const lamports = amount * LAMPORTS_PER_SOL;
 
-    const keyPair = await getSenderKeypairFromMnemonic();
+    const keyPair = await getMnemonic();
 
 
     const transferTransaction = new Transaction().add(
