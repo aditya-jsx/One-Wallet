@@ -6,7 +6,9 @@ import {
   LAMPORTS_PER_SOL,
   SystemProgram,
   TransactionMessage,
-  VersionedTransaction } from "@solana/web3.js";
+  VersionedTransaction, 
+  Transaction,
+  sendAndConfirmTransaction} from "@solana/web3.js";
 
 import * as bip39 from "bip39";
 
@@ -168,6 +170,50 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
     }
 }
 
-// export const sendSol = async () => {
-//     const { blockhash } = await connection.getLatestBlockhash();
-// }
+export const getSenderKeypairFromMnemonic = async (): Promise<Keypair> => {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const res = await chrome.storage.local.get(["one_wallet_data"]);
+    
+    const mnemonic = res.one_wallet_data?.mnemonic;
+
+    if (!mnemonic) {
+      throw new Error("Mnemonic not found.");
+    }
+
+    // 12 words into a cryptographic seed
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+
+    const derivationPath = "m/44'/501'/0'/0'";
+    const derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
+
+    // Reconstruct the Keypair
+    const keypair = Keypair.fromSeed(derivedSeed);
+
+    return keypair;
+  }
+  throw new Error("Chrome storage is not available.");
+}
+
+export const sendSol = async (receiverKey: PublicKey, amount: number) => {
+    const { blockhash } = await connection.getLatestBlockhash();
+    const user = await getPublicKey();
+    const userKey = new PublicKey(user);
+    const lamports = amount * LAMPORTS_PER_SOL;
+
+    const keyPair = await getSenderKeypairFromMnemonic();
+
+
+    const transferTransaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: userKey,
+        toPubkey: receiverKey,
+        lamports: lamports
+      })
+    );
+
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transferTransaction,
+      [keyPair]
+  );
+}
