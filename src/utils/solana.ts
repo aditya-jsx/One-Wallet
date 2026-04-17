@@ -147,10 +147,9 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
     try{
         const fees = await connection.getFeeForMessage(messageV0);
     
-        if(fees.value === null){
+        if(!fees || fees.value === null){
             return 5000; 
         }
-        // console.log(`Transaction fee: ${fees.value} lamports`);
     
         return fees.value;
     }catch(e){
@@ -165,7 +164,7 @@ const getMnemonic = async () => {
 
       const { encryptedData, salt, iv } = vault;
 
-      // for development (make sure this password comes from the UI)
+      // for development, (make sure this password comes from the UI)
       const password = "Aditya@3003"
 
       const mnemonic = await decryptVault(encryptedData, password, salt, iv)
@@ -185,7 +184,8 @@ const getMnemonic = async () => {
 export const sendSol = async (receiverKey: PublicKey, amount: number) => {
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
-    const lamports = amount * LAMPORTS_PER_SOL;
+    const lamports = Math.floor(amount * LAMPORTS_PER_SOL);
+    
     // make sure it uses password to get the mnemionic (which should come from the UI)
     const keyPair = await getMnemonic();
 

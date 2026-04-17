@@ -13,6 +13,7 @@ export default defineConfig({
     crx({ manifest }),
     nodePolyfills({
       protocolImports: true,
+      globals: { Buffer: true }
     }),
   ],
   server: {
