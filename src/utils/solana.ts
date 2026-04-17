@@ -14,8 +14,8 @@ import * as bip39 from "bip39";
 import { decryptVault } from "./crypto";
 import { derivePath } from "ed25519-hd-key";
 
-const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
-const connection = new Connection(RPC_URL, "confirmed");
+// const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
+// const connection = new Connection(RPC_URL, "confirmed");
 
 export const generateMnemonic = () => {
     return bip39.generateMnemonic();
@@ -31,9 +31,9 @@ export const validateAddress = (address: string) => {
     }
 }
 
-export const getBalance = async (publicKey: string) => {
+export const getBalance = async (publicKey: string, rpcURL: string) => {
     try {
-      const connection = new Connection(RPC_URL, "confirmed");
+      const connection = new Connection(rpcURL, "confirmed");
       const pubKeyObj = new PublicKey(publicKey);
       const lamports = await connection.getBalance(pubKeyObj);
       const balance = lamports / 1e9;
@@ -81,8 +81,9 @@ export const checkIfBalanceIsEnough = async (balance: number, receipientAddress:
 }
 
 
-const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: PublicKey, amount: number) => {
+const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: PublicKey, amount: number, rpcURL: string) => {
 
+    const connection = new Connection(rpcURL, "confirmed");
     const { blockhash } = await connection.getLatestBlockhash();
 
     const sender = senderKey;
@@ -181,7 +182,9 @@ const getMnemonic = async () => {
   throw new Error("No wallet data found in storage");
 }
 
-export const sendSol = async (receiverKey: PublicKey, amount: number) => {
+export const sendSol = async (receiverKey: PublicKey, amount: number, rpcURL: string) => {
+
+    const connection = new Connection(rpcURL, "confirmed");
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
     const lamports = Math.floor(amount * LAMPORTS_PER_SOL);

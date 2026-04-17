@@ -11,6 +11,7 @@ import { WalletProvider } from './context/walletContext';
 import CreatePassword from './pages/Createpassword';
 import RecoveryPhrase from './pages/RecoveryPhrase';
 import CreateUsername from './pages/CreateUsername';
+import { NetworkProvider } from './context/networkContext';
 
 const Welcome = () => {
   return(
@@ -41,17 +42,19 @@ const Welcome = () => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WalletProvider>
-      <MemoryRouter>
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#e3e0ff] font-sans">
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/createWallet" element={<CreateWallet />} />
-            <Route path="/createPassword" element={<CreatePassword />} />
-            <Route path="/recoveryPhrase" element={<RecoveryPhrase />} />
-            <Route path="/createUsername" element={<CreateUsername />} />
-          </Routes>
-        </div>
-      </MemoryRouter>
+      <NetworkProvider>
+        <MemoryRouter>
+          <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#e3e0ff] font-sans">
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/createWallet" element={<CreateWallet />} />
+              <Route path="/createPassword" element={<CreatePassword />} />
+              <Route path="/recoveryPhrase" element={<RecoveryPhrase />} />
+              <Route path="/createUsername" element={<CreateUsername />} />
+            </Routes>
+          </div>
+        </MemoryRouter>
+      </NetworkProvider>
     </WalletProvider>
   </StrictMode>
 );

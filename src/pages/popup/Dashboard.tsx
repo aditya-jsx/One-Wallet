@@ -148,6 +148,7 @@ import TokensBox from '../../components/TokensBox';
 
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getBalance } from '../../utils/solana';
+import { useNetwork } from '../../context/networkContext';
 
 const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
 
@@ -157,6 +158,8 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
   const [publicKey, setPublicKey] = useState("");
   const [balance, setBalance] = useState(0);
   const [copied, setCopied] = useState(false);
+
+   const { network, rpcUrl, setNetwork } = useNetwork();
 
   const truncateAddress = (address: string) => {
     if (!address) return "";
@@ -171,7 +174,8 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
         setPublicKey(activeKey);
       });
     } else {
-      setPublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
+      // setPublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
+      throw new Error("Key Not Found in local Storage");
     }
   }, []);
 
@@ -179,14 +183,14 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
     const fetchBalance = async () => {
       if(!publicKey) return;
 
-      const fetchedBalance = await getBalance(publicKey);
+      const fetchedBalance = await getBalance(publicKey, rpcUrl);
 
       if(fetchedBalance !== undefined){
         setBalance(fetchedBalance);
       }
     }
     fetchBalance();
-  }, [publicKey]);
+  }, [publicKey, rpcUrl]);
 
   const handleCopy = () => {
     if (publicKey) {
@@ -233,6 +237,16 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
               </button>
           </div>
         </div>
+
+        <select 
+           value={network} 
+           onChange={(e) => setNetwork(e.target.value as any)}
+           className="bg-[#1e1e1e] text-xs p-1 rounded border border-zinc-700"
+        >
+          <option value="mainnet-beta">Mainnet</option>
+          <option value="devnet">Devnet</option>
+          <option value="testnet">Testnet</option>
+        </select>
 
         {/* Lock Button */}
         <button onClick={onLock} className="text-zinc-400 hover:text-white p-2 transition-colors cursor-pointer" title="Lock Wallet">

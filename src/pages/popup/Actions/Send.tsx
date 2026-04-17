@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, CheckCircle2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
 import { checkIfBalanceIsEnough, getBalance, getPublicKey, sendSol, validateAddress } from '../../../utils/solana';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { useNetwork } from '../../../context/networkContext';
 
 const Send = () => {
   const navigate = useNavigate();
@@ -13,21 +14,27 @@ const Send = () => {
   const [maxAmount, setmaxAmount] = useState(0)
   const [enoughtBalance, setEnoughBalance] = useState(false);
   const isValid = validateAddress(address);
-  const [sending, setIsSending] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [successSignature, setSuccessSignature] = useState("");
+
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+   const { network, rpcUrl, setNetwork } = useNetwork();
 
   useEffect(() => {
     const fetchBalance = async () => {
       if(!userKey) return;
 
-      const fetchedBalance = await getBalance(userKey);
+      const fetchedBalance = await getBalance(userKey, rpcUrl);
 
       if(fetchedBalance !== undefined){
         setUserBalance(fetchedBalance);
       }
     }
     fetchBalance();
-  }, [userKey]);
+  }, [userKey, rpcUrl]);
 
   useEffect(() => {
     const BASE_FEE = 0.000005; 
@@ -69,6 +76,13 @@ const Send = () => {
     }
     checkBalance();
   }, [amount, address, isValid, userBalance]);
+
+  const handleInitialise = () => {
+    if(!isValid || !enoughtBalance) return;
+    setPassword("");
+    setIsPasswordModalOpen(true);
+    setPasswordError("");
+  };
 
 
   const handleSend = async () => {
@@ -168,7 +182,7 @@ const Send = () => {
           Cancel
         </button>
         <button
-          onClick={handleSend}
+          onClick={handleInitialise}
           disabled={!address || !amount || !enoughtBalance || !isValid}
           className={`w-full py-3.5 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 ${
             address && amount
@@ -179,6 +193,47 @@ const Send = () => {
           Review Send
         </button>
       </div>
+      {/* Password Modal Overlay */}
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-sm flex flex-col shadow-2xl">
+            <h2 className="text-xl font-bold mb-2">Sign Transaction</h2>
+            <p className="text-zinc-400 text-sm mb-6">
+              Enter your password to authorize sending {amount} SOL.
+            </p>
+
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#1e1e1e] border border-zinc-700 rounded-xl p-3 text-white focus:outline-none focus:border-[#AB9FF2] transition-colors mb-2"
+              autoFocus
+            />
+            
+            {passwordError && (
+              <p className="text-red-500 text-xs mb-4 pl-1">{passwordError}</p>
+            )}
+
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() => setIsPasswordModalOpen(false)}
+                disabled={isSending}
+                className="flex-1 py-3 rounded-xl font-semibold bg-zinc-800 hover:bg-zinc-700 text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={isSending || !password}
+                className="flex-1 py-3 rounded-xl font-semibold bg-[#AB9FF2] hover:bg-[#998ce3] text-black transition-colors flex items-center justify-center"
+              >
+                {isSending ? <Loader2 size={18} className="animate-spin" /> : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
