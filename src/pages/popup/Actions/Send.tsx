@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
-import { checkIfBalanceIsEnough, getBalance, getPublicKey, validateAddress } from '../../../utils/solana';
+import { checkIfBalanceIsEnough, getBalance, getPublicKey, sendSol, validateAddress } from '../../../utils/solana';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 const Send = () => {
@@ -13,6 +13,8 @@ const Send = () => {
   const [maxAmount, setmaxAmount] = useState(0)
   const [enoughtBalance, setEnoughBalance] = useState(false);
   const isValid = validateAddress(address);
+  const [sending, setIsSending] = useState(false);
+  const [successSignature, setSuccessSignature] = useState("");
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -67,6 +69,29 @@ const Send = () => {
     }
     checkBalance();
   }, [amount, address, isValid, userBalance]);
+
+
+  const handleSend = async () => {
+    if(!isValid || !enoughtBalance) return;
+
+    const password = window.prompt("Enter Password to sign the transaction: ");
+    if(!password) return;
+
+    setIsSending(true);
+
+    try{
+      const parsedAmount = parseFloat(amount);
+      const recipientKey = new PublicKey(address);
+
+      const signature = await sendSol(recipientKey, parsedAmount);
+
+      setSuccessSignature(signature);
+    }catch(e){
+      alert("Transaction failed!, Incorrect Password or network error");
+    }finally{
+      setIsSending(false);
+    }
+  }
 
   return (
     <div className="flex flex-col h-[600px] w-full bg-zinc-950 text-white font-sans overflow-hidden">
@@ -143,6 +168,7 @@ const Send = () => {
           Cancel
         </button>
         <button
+          onClick={handleSend}
           disabled={!address || !amount || !enoughtBalance || !isValid}
           className={`w-full py-3.5 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 ${
             address && amount

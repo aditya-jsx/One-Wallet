@@ -87,29 +87,15 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
 
     const sender = senderKey;
     const recipient = receiverKey;
-    // console.log(`Created sender account: ${sender.publicKey.toString()}`);
-    // console.log(`Created recipient account: ${recipient.publicKey.toString()}`);
 
-    // // Request and confirm airdrop
-    // const airdropSignature = await connection.requestAirdrop(
-    //   sender.publicKey,
-    //   LAMPORTS_PER_SOL
-    // );
-
-    // await connection.confirmTransaction({
-    //   signature: airdropSignature,
-    //   blockhash,
-    //   lastValidBlockHeight
-    // });
-
-    // Create a transfer instruction
+    // transfer instruction
     const transferInstruction = SystemProgram.transfer({
       fromPubkey: sender,
       toPubkey: recipient,
       lamports: amount
     });
 
-    // Create simulation instructions with placeholder compute unit limit
+    // simulation instructions with placeholder compute unit limit
     const simulationInstructions = [
       ComputeBudgetProgram.setComputeUnitLimit({
         units: 1_400_000 // High value for simulation
@@ -179,7 +165,7 @@ const getMnemonic = async () => {
 
       const { encryptedData, salt, iv } = vault;
 
-      // for development
+      // for development (make sure this password comes from the UI)
       const password = "Aditya@3003"
 
       const mnemonic = await decryptVault(encryptedData, password, salt, iv)
@@ -193,29 +179,40 @@ const getMnemonic = async () => {
       return keypair;
   }
 
-  return "not found"
+  throw new Error("No wallet data found in storage");
 }
 
 export const sendSol = async (receiverKey: PublicKey, amount: number) => {
-    const { blockhash } = await connection.getLatestBlockhash();
-    const user = await getPublicKey();
-    const userKey = new PublicKey(user);
-    const lamports = amount * LAMPORTS_PER_SOL;
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
+    const lamports = amount * LAMPORTS_PER_SOL;
+    // make sure it uses password to get the mnemionic (which should come from the UI)
     const keyPair = await getMnemonic();
 
+    const transferInstruction = SystemProgram.transfer({
+      fromPubkey: keyPair.publicKey,
+      toPubkey: receiverKey,
+      lamports: lamports,
+    });
 
-    const transferTransaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: userKey,
-        toPubkey: receiverKey,
-        lamports: lamports
-      })
-    );
+    const messageV0 = new TransactionMessage({
+      payerKey: keyPair.publicKey,
+      recentBlockhash: blockhash,
+      instructions: [transferInstruction],
+    }).compileToV0Message();
 
-    const signature = await sendAndConfirmTransaction(
-      connection,
-      transferTransaction,
-      [keyPair]
-  );
+    const transaction = new VersionedTransaction(messageV0);
+
+    transaction.sign([keyPair]);
+
+    const signature = await connection.sendTransaction(transaction);
+
+    await connection.confirmTransaction({
+      signature,
+      blockhash,
+      lastValidBlockHeight
+    });
+
+    return signature;
+
 }
