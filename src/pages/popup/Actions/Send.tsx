@@ -62,7 +62,7 @@ const Send = () => {
           const recipientKey = new PublicKey(address);
           // const sendingAmount = parseFloat(amount);
 
-          const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, parsedAmount);
+          const {fee, isEnough} = await checkIfBalanceIsEnough(userBalance, recipientKey, parsedAmount, rpcUrl);
           const remainingAmount = userBalance - (fee / 1e9);
           console.log(remainingAmount)
           setmaxAmount(remainingAmount > 0 ? remainingAmount : 0);
@@ -97,7 +97,7 @@ const Send = () => {
       const parsedAmount = parseFloat(amount);
       const recipientKey = new PublicKey(address);
 
-      const signature = await sendSol(recipientKey, parsedAmount);
+      const signature = await sendSol(recipientKey, parsedAmount, rpcUrl);
 
       setSuccessSignature(signature);
     }catch(e){

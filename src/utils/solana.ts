@@ -57,7 +57,7 @@ export const getPublicKey = async () => {
   return activeKey;
 }
 
-export const checkIfBalanceIsEnough = async (balance: number, receipientAddress: PublicKey, sendingAmount: number) => {
+export const checkIfBalanceIsEnough = async (balance: number, receipientAddress: PublicKey, sendingAmount: number, rpcUrl: string) => {
 
     let activeKey = new PublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
     if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -69,7 +69,7 @@ export const checkIfBalanceIsEnough = async (balance: number, receipientAddress:
 
     const userBalance = balance * LAMPORTS_PER_SOL;
     const amountToBeSent = Math.floor(sendingAmount * LAMPORTS_PER_SOL);
-    const fee = await calculateTransactionFee(activeKey, receipientAddress, amountToBeSent);
+    const fee = await calculateTransactionFee(activeKey, receipientAddress, amountToBeSent, rpcUrl);
 
     let requiredAmount = fee + amountToBeSent;
     let isEnough = false;
