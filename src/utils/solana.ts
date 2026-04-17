@@ -68,7 +68,7 @@ export const checkIfBalanceIsEnough = async (balance: number, receipientAddress:
     }
 
     const userBalance = balance * LAMPORTS_PER_SOL;
-    const amountToBeSent = sendingAmount * LAMPORTS_PER_SOL;
+    const amountToBeSent = Math.floor(sendingAmount * LAMPORTS_PER_SOL);
     const fee = await calculateTransactionFee(activeKey, receipientAddress, amountToBeSent);
 
     let requiredAmount = fee + amountToBeSent;
@@ -185,7 +185,7 @@ export const sendSol = async (receiverKey: PublicKey, amount: number) => {
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
     const lamports = Math.floor(amount * LAMPORTS_PER_SOL);
-    
+
     // make sure it uses password to get the mnemionic (which should come from the UI)
     const keyPair = await getMnemonic();
 

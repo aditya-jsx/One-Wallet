@@ -23,7 +23,7 @@ const App = () => {
           setIsInitialized(true);
         }else{
           chrome.tabs.create({ url: 'onboarding.html' });
-          window.close;
+          window.close();
         }
         setIsLoading(false);
       })
