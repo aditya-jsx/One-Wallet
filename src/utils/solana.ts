@@ -158,7 +158,7 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
     }
 }
 
-const getMnemonic = async () => {
+const getMnemonic = async (password: string) => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
       const res = await chrome.storage.local.get(["one_wallet_data"]);
       const { username, vault, isInitialized } = res.one_wallet_data;
@@ -166,7 +166,7 @@ const getMnemonic = async () => {
       const { encryptedData, salt, iv } = vault;
 
       // for development, (make sure this password comes from the UI)
-      const password = "Aditya@3003"
+      // const password = "Aditya@3003"
 
       const mnemonic = await decryptVault(encryptedData, password, salt, iv)
 
@@ -182,7 +182,7 @@ const getMnemonic = async () => {
   throw new Error("No wallet data found in storage");
 }
 
-export const sendSol = async (receiverKey: PublicKey, amount: number, rpcURL: string) => {
+export const sendSol = async (receiverKey: PublicKey, amount: number, rpcURL: string, password: string) => {
 
     const connection = new Connection(rpcURL, "confirmed");
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
@@ -190,7 +190,7 @@ export const sendSol = async (receiverKey: PublicKey, amount: number, rpcURL: st
     const lamports = Math.floor(amount * LAMPORTS_PER_SOL);
 
     // make sure it uses password to get the mnemionic (which should come from the UI)
-    const keyPair = await getMnemonic();
+    const keyPair = await getMnemonic(password);
 
     const transferInstruction = SystemProgram.transfer({
       fromPubkey: keyPair.publicKey,

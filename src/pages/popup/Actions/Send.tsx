@@ -88,20 +88,24 @@ const Send = () => {
   const handleSend = async () => {
     if(!isValid || !enoughtBalance) return;
 
-    const password = window.prompt("Enter Password to sign the transaction: ");
-    if(!password) return;
+    if(!password) {
+        setPasswordError("Password is required");
+        return;
+    }
 
     setIsSending(true);
+    setPasswordError("");
 
     try{
       const parsedAmount = parseFloat(amount);
       const recipientKey = new PublicKey(address);
 
-      const signature = await sendSol(recipientKey, parsedAmount, rpcUrl);
+      const signature = await sendSol(recipientKey, parsedAmount, rpcUrl, password);
 
+      setIsPasswordModalOpen(false);
       setSuccessSignature(signature);
     }catch(e){
-      alert("Transaction failed!, Incorrect Password or network error");
+      setPasswordError("Incorrect Password or network error");
     }finally{
       setIsSending(false);
     }

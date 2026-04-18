@@ -9,10 +9,11 @@ interface NetworkContextType {
 }
 
 const RPC_URL = import.meta.env.VITE_RPC_URL;
+const RPC_DEVNET_URL = import.meta.env.VITE_RPC_DEVNET_URL;
 
 const RPC_MAPPING: Record<NetworkType, string> = {
   'mainnet-beta': RPC_URL,
-  'devnet': "https://api.devnet.solana.com",
+  'devnet': RPC_DEVNET_URL,
   'testnet': "https://api.testnet.solana.com"
 };
 
