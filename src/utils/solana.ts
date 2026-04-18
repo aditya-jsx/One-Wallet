@@ -165,9 +165,6 @@ const getMnemonic = async (password: string) => {
 
       const { encryptedData, salt, iv } = vault;
 
-      // for development, (make sure this password comes from the UI)
-      // const password = "Aditya@3003"
-
       const mnemonic = await decryptVault(encryptedData, password, salt, iv)
 
       const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -189,7 +186,6 @@ export const sendSol = async (receiverKey: PublicKey, amount: number, rpcURL: st
 
     const lamports = Math.floor(amount * LAMPORTS_PER_SOL);
 
-    // make sure it uses password to get the mnemionic (which should come from the UI)
     const keyPair = await getMnemonic(password);
 
     const transferInstruction = SystemProgram.transfer({

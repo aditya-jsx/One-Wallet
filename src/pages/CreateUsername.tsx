@@ -24,7 +24,7 @@ const CreateUsername = () => {
 
     try{
       const seed = bip39.mnemonicToSeedSync(setupData.mnemonic);
-      const deriveSeed = derivePath("m/44'/501'/0'/0", seed.toString("hex")).key;
+      const deriveSeed = derivePath("m/44'/501'/0'/0'", seed.toString("hex")).key;
       const keypair = Keypair.fromSeed(deriveSeed);
       const actualPublicKey = keypair.publicKey.toBase58();
 
@@ -37,7 +37,7 @@ const CreateUsername = () => {
       }
 
       if(typeof chrome !== 'undefined' && chrome.storage){
-        chrome.storage.local.set({"one_wallet_data": finalWalletData, "public_key": actualPublicKey}, () => {
+        chrome.storage.local.set({"one_wallet_data": finalWalletData, "publicKey": actualPublicKey}, () => {
           setIsFinished(true);
         })
       }
