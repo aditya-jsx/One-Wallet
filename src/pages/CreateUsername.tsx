@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom"
 import { useWalletSetup } from "../context/walletContext";
 import { encryptVault } from "../utils/crypto";
 
+import * as bip39 from "bip39";
+import { derivePath } from "ed25519-hd-key";
+import { Keypair } from "@solana/web3.js";
+
 const CreateUsername = () => {
 
   const navigate = useNavigate();
@@ -19,6 +23,11 @@ const CreateUsername = () => {
     setisEncrypting(true);
 
     try{
+      const seed = bip39.mnemonicToSeedSync(setupData.mnemonic);
+      const deriveSeed = derivePath("m/44'/501'/0'/0", seed.toString("hex")).key;
+      const keypair = Keypair.fromSeed(deriveSeed);
+      const actualPublicKey = keypair.publicKey.toBase58();
+
       const vault = await encryptVault(setupData.mnemonic, setupData.password);
 
       const finalWalletData = {
@@ -28,7 +37,7 @@ const CreateUsername = () => {
       }
 
       if(typeof chrome !== 'undefined' && chrome.storage){
-        chrome.storage.local.set({"one_wallet_data": finalWalletData}, () => {
+        chrome.storage.local.set({"one_wallet_data": finalWalletData, "public_key": actualPublicKey}, () => {
           setIsFinished(true);
         })
       }

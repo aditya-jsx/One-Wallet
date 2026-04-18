@@ -105,10 +105,35 @@ const Send = () => {
       setIsPasswordModalOpen(false);
       setSuccessSignature(signature);
     }catch(e){
+      console.error("TRANSACTION FAILED:", e); 
       setPasswordError("Incorrect Password or network error");
     }finally{
       setIsSending(false);
     }
+  }
+
+  if (successSignature) {
+      return (
+        <div className="flex flex-col h-[600px] w-full bg-zinc-950 text-white items-center justify-center p-6 font-sans">
+            <CheckCircle2 size={64} className="text-green-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Transaction Sent!</h2>
+            <p className="text-zinc-400 text-center mb-6">Successfully sent {amount} SOL.</p>
+            
+            <button 
+                onClick={() => window.open(`https://explorer.solana.com/tx/${successSignature}?cluster=devnet`, '_blank')}
+                className="text-[#AB9FF2] hover:text-[#998ce3] underline mb-8"
+            >
+                View on Solana Explorer
+            </button>
+
+            <button
+                onClick={() => navigate('/')} // Or navigate(-1)
+                className="w-full py-3.5 rounded-2xl font-bold bg-[#2A2A2B] hover:bg-[#333] transition-colors"
+            >
+                Back to Dashboard
+            </button>
+        </div>
+      )
   }
 
   return (
