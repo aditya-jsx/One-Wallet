@@ -1,24 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getPublicKey, shortenKey } from '../../../utils/solana';
 
 const Receive = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [userKey, setUserKey] = useState("")
+  // const key = getPublicKey();
+
+
+  useEffect(() => {
+    const fetchUserKey = async () => {
+      const key = await getPublicKey();
+      const miniKey = await shortenKey(key);
+      setUserKey(miniKey);
+    }
+    fetchUserKey();
+  }, [])
 
   // Mock data for blockchains
   const blockchains = [
-    { id: 'solana', name: 'Solana', networks: ['Solana'], symbol: 'SOL', value: 1.245, nativeToken: 'solana' },
-    { id: 'arbitrum', name: 'Arbitrum', networks: ['Arbitrum'], symbol: 'ARB', value: 0, nativeToken: null },
-    { id: 'base', name: 'Base', networks: ['Base Mainnet'], symbol: 'BASE', value: 0, nativeToken: null },
-    { id: 'polygon', name: 'Polygon', networks: ['Polygon Mainnet'], symbol: 'MATIC', value: 0, nativeToken: null },
-    { id: 'ethereum', name: 'Ethereum', networks: ['Ethereum'], symbol: 'ETH', value: 0.312, nativeToken: 'ethereum' },
+    { id: 'solana', name: 'Solana', networks: ['Solana'], imgUrl: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', value: userKey, nativeToken: 'solana' },
+    // { id: 'arbitrum', name: 'Arbitrum', networks: ['Arbitrum'], symbol: 'ARB', value: 0, nativeToken: null },
+    // { id: 'base', name: 'Base', networks: ['Base Mainnet'], symbol: 'BASE', value: 0, nativeToken: null },
+    // { id: 'polygon', name: 'Polygon', networks: ['Polygon Mainnet'], symbol: 'MATIC', value: 0, nativeToken: null },
+    // { id: 'ethereum', name: 'Ethereum', networks: ['Ethereum'], symbol: 'ETH', value: 0.312, nativeToken: 'ethereum' },
   ];
 
   const getChainLogo = (chainId: string) => {
     switch (chainId) {
       case 'solana':
-        return <div className="w-full h-full bg-gradient-to-tr from-[#9945FF] to-[#14F195] rounded-full" />;
+        return <img src={blockchains[0].imgUrl} alt="" className='rounded-full' />;
       case 'arbitrum':
         return <div className="w-full h-full bg-[#12AAFF] rounded-full flex items-center justify-center font-bold text-black text-xs">Ar</div>;
       case 'base':
@@ -90,12 +103,10 @@ const Receive = () => {
                 </div>
               </div>
               
-              {chain.value > 0 && (
-                <div className="flex flex-col items-end">
-                  <span className="font-semibold text-base">{chain.value} {chain.symbol}</span>
-                  <span className="text-xs text-gray-400">Main Account</span>
-                </div>
-              )}
+              <div className="flex flex-col items-end">
+                <span className="font-semibold text-base">{chain.value}</span>
+                {/* <span className="text-xs text-gray-400">Main Account</span> */}
+              </div>
             </button>
           ))}
         </div>
