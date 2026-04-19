@@ -3,16 +3,15 @@ import { ArrowLeft, Copy, Check } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getPublicKey } from '../../../utils/solana';
 import { useNetwork } from '../../../context/networkContext';
-import QrCode from "react-qr-code";
-
+import { QRCodeSVG } from "qrcode.react";
 
 const ReceiveQR = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const selectedChain = location.state?.selectedChain;
+  const selectedChain = location.state?.selectedChain || { id: 'solana', name: 'Solana' };
   const [copied, setCopied] = useState(false);
   const [address, setAddress] = useState("");
-  const {network, rpcUrl, setNetwork} = useNetwork();
+  const {network, rpcUrl, setNetwork} = useNetwork();  
 
   useEffect(() => {
     const fetchkey = async () => {
@@ -32,7 +31,9 @@ const ReceiveQR = () => {
   const getChainLogo = (chainId: string) => {
     switch (chainId) {
       case 'solana':
-        return <div className="w-full h-full bg-gradient-to-tr from-[#9945FF] to-[#14F195] rounded-full" />;
+        return <div className="w-full h-full" >
+          <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" alt="" className='rounded-xl' />
+        </div>;
       case 'arbitrum':
         return <div className="w-full h-full bg-[#12AAFF] rounded-full flex items-center justify-center font-bold text-black text-xs">Ar</div>;
       case 'base':
@@ -65,16 +66,10 @@ const ReceiveQR = () => {
       <div className="flex-1 flex flex-col items-center px-6 pt-2 pb-6 overflow-y-auto">
         
         {/* QR Code Container */}
-        <div className="bg-white p-4 rounded-3xl relative flex items-center justify-center mb-6 shadow-lg shadow-black/20">
-          <div className="bg-white rounded-xl flex items-center justify-center">
+        <div className="bg-white p-2 rounded-lg relative flex items-center justify-center mb-6 shadow-lg shadow-black/20">
+          <div className="w-[160px] h-[160px] bg-white rounded-xl flex items-center justify-center">
              {address ? (
-               <QrCode 
-                 value={address} 
-                 size={180} 
-                 bgColor="#ffffff"
-                 fgColor="#000000"
-                 level="M"
-               />
+               <QRCodeSVG value={address} size={180} />
              ) : (
                <div className="w-full h-full animate-pulse bg-gray-200 rounded-xl" />
              )}
@@ -82,7 +77,7 @@ const ReceiveQR = () => {
           
           {/* Center Logo Overlay */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-12 h-12 bg-white rounded-full p-1 shadow-md flex items-center justify-center">
+            <div className="w-14 h-14 p-1 shadow-md flex items-center justify-center">
               <div className="w-full h-full">
                 {getChainLogo(selectedChain.id)}
               </div>
