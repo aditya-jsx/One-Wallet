@@ -12,6 +12,10 @@ import CreatePassword from './pages/Createpassword';
 import RecoveryPhrase from './pages/RecoveryPhrase';
 import CreateUsername from './pages/CreateUsername';
 import { NetworkProvider } from './context/networkContext';
+import ConnectExistingWallet from './pages/ConnectExistingWallet';
+import ImportSeed from './pages/importSeed';
+import FindAccount from './pages/findAccount';
+import ViewAccounts from './pages/viewAccounts';
 
 const Welcome = () => {
   return(
@@ -32,7 +36,7 @@ const Welcome = () => {
       <div className='flex h-[10%] w-full'>
           <div className="flex flex-col w-full justify-end items-center gap-2"> 
             <Link to="/createWallet" className="bg-[#aca0f2] text-black w-full py-2.5 text-center rounded-2xl text-lg hover:bg-[#9b8df0]">Create a new Wallet</Link>
-            <Link to="/importSeed" className="bg-[#292929] text-white w-full py-2.5 text-center rounded-2xl text-lg hover:bg-[#333333]">I Already Have a Wallet</Link>
+            <Link to="/ConnectExistingWallet" className="bg-[#292929] text-white w-full py-2.5 text-center rounded-2xl text-lg hover:bg-[#333333]">I Already Have a Wallet</Link>
           </div>
       </div>
     </div>
@@ -51,6 +55,10 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/createPassword" element={<CreatePassword />} />
               <Route path="/recoveryPhrase" element={<RecoveryPhrase />} />
               <Route path="/createUsername" element={<CreateUsername />} />
+              <Route path="/ConnectExistingWallet" element={<ConnectExistingWallet />} />
+              <Route path="/importSeed" element={<ImportSeed />} />
+              <Route path="/findAccount" element={<FindAccount />} />
+              <Route path="/viewAccounts" element={<ViewAccounts />} />
             </Routes>
           </div>
         </MemoryRouter>

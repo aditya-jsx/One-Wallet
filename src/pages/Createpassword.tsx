@@ -7,13 +7,18 @@ const CreatePassword = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [isChecked, setIsChecked] = useState(false);
-  const { updateSetup } = useWalletSetup();
+  const { setupData, updateSetup } = useWalletSetup();
 
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === confirm && isChecked && password.length >= 8) {
       updateSetup({ password });
-      navigate('/recoveryPhrase');
+      
+      if (setupData.mnemonic) {
+        navigate('/createUsername');
+      } else {
+        navigate('/recoveryPhrase');
+      }
     }
   };
 

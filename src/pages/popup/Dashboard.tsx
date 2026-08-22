@@ -4,7 +4,7 @@ import { Send, ArrowLeftRight, QrCode, DollarSign, Copy, ExternalLink, Check } f
 import { useNavigate } from 'react-router-dom';
 import TokensBox from '../../components/TokensBox';
 
-import { Connection, PublicKey } from "@solana/web3.js";
+// import { Connection, PublicKey } from "@solana/web3.js";
 import { getBalance } from '../../utils/solana';
 import { useNetwork } from '../../context/networkContext';
 
@@ -28,7 +28,7 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.local.get(["one_wallet_data", "publicKey"], (res) => {
         if (res.one_wallet_data?.username) setUsername(res.one_wallet_data.username);
-        const activeKey = res.publicKey || "EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi";
+        const activeKey = res.publicKey;
         setPublicKey(activeKey);
       });
     } else {
