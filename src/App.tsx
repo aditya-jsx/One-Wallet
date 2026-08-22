@@ -47,7 +47,6 @@ const App = () => {
     );
   }
 
-  // If unlocked, render the MemoryRouter with all your internal extension screens
   return (
     <MemoryRouter>
       <div className="w-[360px] h-[600px] bg-zinc-950 text-white overflow-hidden flex flex-col">
