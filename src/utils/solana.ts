@@ -14,11 +14,7 @@ import * as bip39 from "bip39";
 import { decryptVault } from "./crypto";
 import { derivePath } from "ed25519-hd-key";
 
-// const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
-// const connection = new Connection(RPC_URL, "confirmed");
-
 export const shortenKey = (publicKey: string) => {
-  // const shortKey = publicKey;
   const short = `${publicKey.slice(0,4)}...${publicKey.slice(-4)}`;
   return short;
 }

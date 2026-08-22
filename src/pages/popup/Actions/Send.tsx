@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ChevronDown, CheckCircle2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
 import { checkIfBalanceIsEnough, getBalance, getPublicKey, sendSol, validateAddress } from '../../../utils/solana';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useNetwork } from '../../../context/networkContext';
 
 const Send = () => {

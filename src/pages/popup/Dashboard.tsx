@@ -3,8 +3,6 @@ import ActionButton from '../../components/ActionButton';
 import { Send, ArrowLeftRight, QrCode, DollarSign, Copy, ExternalLink, Check } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import TokensBox from '../../components/TokensBox';
-
-// import { Connection, PublicKey } from "@solana/web3.js";
 import { getBalance } from '../../utils/solana';
 import { useNetwork } from '../../context/networkContext';
 
@@ -32,7 +30,6 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
         setPublicKey(activeKey);
       });
     } else {
-      // setPublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
       throw new Error("Key Not Found in local Storage");
     }
   }, []);
