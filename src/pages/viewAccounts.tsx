@@ -31,7 +31,7 @@ const ViewAccounts = () => {
             const shortKey = shortenKey(pubKey.toBase58());
             setPublicKey(shortKey);
             const balance = await getBalance(pubKey.toBase58(), rpcUrl.rpcUrl)
-            setUserBalance(balance.toString());
+            setUserBalance(balance?.toString() ?? "0");
         }
     }
 

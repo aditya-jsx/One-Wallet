@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronDown, CheckCircle2, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
 import { checkIfBalanceIsEnough, getBalance, getPublicKey, sendSol, validateAddress } from '../../../utils/solana';
 import { PublicKey } from '@solana/web3.js';
@@ -21,7 +21,7 @@ const Send = () => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-   const { network, rpcUrl, setNetwork } = useNetwork();
+   const { rpcUrl } = useNetwork();
 
   useEffect(() => {
     const fetchBalance = async () => {

@@ -6,7 +6,24 @@
     "default_popup": "index.html"
   },
   "permissions": ["storage"],
-  "host_permissions": ["http://localhost:5173/*"],
+  "host_permissions": ["http://localhost:5173/*", "<all_urls>"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/inpage.js", "assets/*.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' http://localhost:5173; object-src 'self'"
   }

@@ -6,9 +6,7 @@ import {
   LAMPORTS_PER_SOL,
   SystemProgram,
   TransactionMessage,
-  VersionedTransaction, 
-  Transaction,
-  sendAndConfirmTransaction} from "@solana/web3.js";
+  VersionedTransaction} from "@solana/web3.js";
 
 import * as bip39 from "bip39";
 import { decryptVault } from "./crypto";
@@ -25,7 +23,7 @@ export const generateMnemonic = () => {
 
 export const validateAddress = (address: string) => {
     try{
-        const key = new PublicKey(address);
+        new PublicKey(address);
         return true;
     }
     catch(e){
@@ -49,7 +47,7 @@ export const getBalance = async (publicKey: string, rpcURL: string) => {
 export const getPublicKey = async () => {
   let activeKey = "EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi";
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    const res = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
+    const res: any = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
     if (res.publicKey) {
         activeKey = res.publicKey;
     }
@@ -63,7 +61,7 @@ export const checkIfBalanceIsEnough = async (balance: number, receipientAddress:
 
     let activeKey = new PublicKey("EJj7PyVa15YxwyHFxjsFXkhVypoJy7QBg6Y6vT9RhKBi");
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      const res = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
+      const res: any = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
       if (res.publicKey) {
           activeKey = new PublicKey(res.publicKey);
       }
@@ -162,8 +160,8 @@ const calculateTransactionFee = async (senderKey: PublicKey, receiverKey: Public
 
 const getMnemonic = async (password: string) => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
-      const res = await chrome.storage.local.get(["one_wallet_data"]);
-      const { username, vault, isInitialized } = res.one_wallet_data;
+      const res: any = await chrome.storage.local.get(["one_wallet_data"]);
+      const { vault } = res.one_wallet_data;
 
       const { encryptedData, salt, iv } = vault;
 

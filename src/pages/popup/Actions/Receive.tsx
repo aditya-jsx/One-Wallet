@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Copy, QrCode, Search } from 'lucide-react';
+import { ArrowLeft, Copy, QrCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicKey, shortenKey } from '../../../utils/solana';
 

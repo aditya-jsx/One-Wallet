@@ -30,7 +30,16 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'index.html'),
-        onboarding: resolve(__dirname, 'onboarding.html')
+        onboarding: resolve(__dirname, 'onboarding.html'),
+        inpage: resolve(__dirname, 'src/inpage/index.ts')
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'inpage') {
+            return 'assets/inpage.js';
+          }
+          return 'assets/[name]-[hash].js';
+        }
       }
     }
   }

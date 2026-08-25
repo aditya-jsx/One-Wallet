@@ -104,12 +104,12 @@ const CreateUsername = () => {
           />
           
           <button 
-            disabled={username.length === 0}
+            disabled={username.length === 0 || isEncrypting}
             className={`mt-6 py-3 rounded-xl text-lg font-semibold transition-colors ${
-              username.length === 0 ? 'bg-[#292929] text-zinc-500 cursor-not-allowed' : 'bg-[#aca0f2] text-black hover:bg-[#9b8df0] cursor-pointer'
+              username.length === 0 || isEncrypting ? 'bg-[#292929] text-zinc-500 cursor-not-allowed' : 'bg-[#aca0f2] text-black hover:bg-[#9b8df0] cursor-pointer'
             }`}
           >
-            Finish Setup
+            {isEncrypting ? "Encrypting..." : "Finish Setup"}
           </button>
         </form>
     </div>

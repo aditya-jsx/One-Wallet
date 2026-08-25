@@ -6,7 +6,7 @@ import TokensBox from '../../components/TokensBox';
 import { getBalance } from '../../utils/solana';
 import { useNetwork } from '../../context/networkContext';
 
-const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
+
 
 export default function Dashboard({ onLock }: { onLock: () => void }) {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function Dashboard({ onLock }: { onLock: () => void }) {
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.local.get(["one_wallet_data", "publicKey"], (res) => {
+      chrome.storage.local.get(["one_wallet_data", "publicKey"], (res: any) => {
         if (res.one_wallet_data?.username) setUsername(res.one_wallet_data.username);
         const activeKey = res.publicKey;
         setPublicKey(activeKey);

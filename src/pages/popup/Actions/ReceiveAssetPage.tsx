@@ -11,7 +11,7 @@ const ReceiveQR = () => {
   const selectedChain = location.state?.selectedChain || { id: 'solana', name: 'Solana' };
   const [copied, setCopied] = useState(false);
   const [address, setAddress] = useState("");
-  const {network, rpcUrl, setNetwork} = useNetwork();  
+  const {network} = useNetwork();  
 
   useEffect(() => {
     const fetchkey = async () => {

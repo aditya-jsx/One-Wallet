@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Unlock from "./pages/popup/Unlock"
 import Dashboard from './pages/popup/Dashboard';
@@ -10,15 +10,12 @@ import ReceiveAsset from './pages/popup/Actions/ReceiveAssetPage';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [hasWallet, setHasWallet] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  
-  const hasOpenedTab = useRef(false);
 
   useEffect(() => {
     if(typeof chrome !== 'undefined' && chrome.storage){
-      chrome.storage.local.get(["one_wallet_data"], (result) => {
+      chrome.storage.local.get(["one_wallet_data"], (result: any) => {
         if(result.one_wallet_data?.isInitialized){
           setIsInitialized(true);
         }else{
