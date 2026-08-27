@@ -5,7 +5,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         try {
             switch (message.method) {
                 case 'connect': {
-                    const data: any = await chrome.storage.local.get(["publicKey"]);
+                    const data: any = await chrome.storage.local.get(["one_wallet_data", "publicKey"]);
                     if (data.publicKey) {
                         sendResponse({ result: { publicKey: data.publicKey } });
                     } else {

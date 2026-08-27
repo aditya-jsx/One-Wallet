@@ -1,7 +1,10 @@
+// @ts-ignore
+import inpageUrl from '../inpage/index.ts?script&module';
+
 console.log("OneWallet: Content script running");
 const script = document.createElement('script');
 script.setAttribute('type', 'module');
-script.setAttribute('src', chrome.runtime.getURL('assets/inpage.js'));
+script.setAttribute('src', chrome.runtime.getURL(inpageUrl));
 script.onload = () => console.log("OneWallet: Inpage script loaded");
 script.onerror = (e) => console.error("OneWallet: Inpage script failed to load", e);
 (document.head || document.documentElement).appendChild(script);
